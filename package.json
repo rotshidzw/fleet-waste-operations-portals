@@ -1,0 +1,17 @@
+{
+  "name": "fleet-waste-operations-portals",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace apps/public-web run dev & npm --workspace apps/intranet run dev",
+    "lint": "npm --workspace apps/public-web run lint && npm --workspace apps/intranet run lint",
+    "typecheck": "npm --workspace apps/public-web run typecheck && npm --workspace apps/intranet run typecheck",
+    "test": "npm --workspace apps/public-web run test && npm --workspace apps/intranet run test",
+    "db:generate": "npm --workspace packages/db run generate",
+    "db:migrate": "npm --workspace packages/db run migrate",
+    "db:seed": "npm --workspace packages/db run seed"
+  }
+}

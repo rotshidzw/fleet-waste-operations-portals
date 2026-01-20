@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+.sidebar-link {
+  @apply flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-200;
+}
+
+.sidebar-link-active {
+  @apply bg-njilo-blue text-white hover:bg-njilo-blue;
+}
