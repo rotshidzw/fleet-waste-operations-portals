@@ -1,0 +1,28 @@
+{
+  "images": [
+    "/media/stock/hero-1.svg",
+    "/media/stock/hero-2.svg",
+    "/media/stock/hero-3.svg",
+    "/media/stock/service-fleet.svg",
+    "/media/stock/service-maintenance.svg",
+    "/media/stock/service-managed.svg",
+    "/media/stock/service-compliance.svg",
+    "/media/stock/service-fuel.svg",
+    "/media/stock/service-lease.svg",
+    "/media/stock/service-driver.svg",
+    "/media/stock/service-tracking.svg",
+    "/media/stock/service-registration.svg",
+    "/media/stock/service-insurance.svg",
+    "/media/stock/service-equipment.svg",
+    "/media/stock/service-mining.svg",
+    "/media/stock/service-reports.svg",
+    "/media/stock/service-purchase.svg",
+    "/media/stock/partner-1.svg",
+    "/media/stock/partner-2.svg",
+    "/media/stock/partner-3.svg",
+    "/media/stock/partner-4.svg"
+  ],
+  "videos": [
+    "/media/stock/sample.mp4"
+  ]
+}
