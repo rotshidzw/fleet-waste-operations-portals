@@ -89,6 +89,7 @@ model Lead {
   company   String?
   message   String
   source    LeadSource @default(WEBSITE)
+  activities Activity[]
   createdAt DateTime   @default(now())
 }
 
@@ -118,6 +119,7 @@ model Deal {
   stage     DealStage @default(QUALIFIED)
   company   Company?  @relation(fields: [companyId], references: [id])
   companyId String?
+  activities Activity[]
   createdAt DateTime  @default(now())
 }
 
@@ -138,6 +140,7 @@ model Vehicle {
   plate     String
   status    String
   assignedTo String?
+  workOrders WorkOrder[]
   createdAt DateTime @default(now())
 }
 
