@@ -130,6 +130,36 @@ export default async function DashboardPage() {
           ))}
         </div>
       </Card>
+
+      <Card title="Intranet capabilities" description="Expanded feature set across operations, CRM, HR, and compliance.">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            "Opportunity pipeline views",
+            "Customer lifecycle tracking",
+            "Driver telemetry snapshots",
+            "Fleet maintenance scheduling",
+            "Waste job SLA monitoring",
+            "Compliance note library",
+            "HR candidate vault",
+            "Leave & absence planning",
+            "Supplier governance",
+            "Audit trail export",
+            "Role-based dashboards",
+            "Executive KPI summaries",
+            "Incident response logs",
+            "Asset utilization heatmaps",
+            "Service catalog publishing",
+            "Media & publications hub"
+          ].map((feature) => (
+            <div
+              key={feature}
+              className="rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600"
+            >
+              {feature}
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }

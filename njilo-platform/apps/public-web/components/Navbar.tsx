@@ -41,11 +41,6 @@ export function Navbar() {
         </nav>
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <a href="https://www.linkedin.com" className="hover:text-blue-700" aria-label="LinkedIn">in</a>
-            <a href="https://x.com" className="hover:text-blue-700" aria-label="X">X</a>
-            <a href="https://www.youtube.com" className="hover:text-blue-700" aria-label="YouTube">YT</a>
-          </div>
           <Link href="/contact-us" className="text-sm text-slate-600 transition hover:text-blue-700 dark:text-slate-300">
             Contact
           </Link>

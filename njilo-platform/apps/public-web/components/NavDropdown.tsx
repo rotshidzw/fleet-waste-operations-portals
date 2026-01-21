@@ -92,7 +92,7 @@ export function NavDropdown({ label, href, childrenItems }: NavDropdownProps) {
               exit={{ opacity: 0, y: 8 }}
               transition={{ duration: 0.2 }}
               // Fix: remove pointer-events trapping and elevate z-index so dropdown stays clickable.
-              className="absolute left-0 z-50 mt-3 w-72 rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-700 dark:bg-slate-900"
+              className="absolute left-0 z-[60] mt-3 w-[32rem] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl dark:border-slate-700 dark:bg-slate-900"
               role="menu"
               onKeyDown={(event) => {
                 if (event.key === "Escape") {
