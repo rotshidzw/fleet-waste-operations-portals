@@ -24,6 +24,13 @@ npm run dev
 
 > Make sure `DATABASE_URL` is set in your `.env` before running Prisma commands.
 
+**Windows note (Git Bash vs PowerShell):**
+- Git Bash: `export DATABASE_URL="postgresql://njilo:njilo@localhost:5432/njilo"`
+- PowerShell: `$env:DATABASE_URL="postgresql://njilo:njilo@localhost:5432/njilo"`
+- CMD: `set DATABASE_URL=postgresql://njilo:njilo@localhost:5432/njilo`
+
+If you see `P1000` authentication errors, confirm Postgres is running and the credentials match the DB user/password.
+
 Public site: http://localhost:3000
 
 Intranet: http://localhost:3001 (demo account: admin@njiloconsulting.co.za / admin123)
