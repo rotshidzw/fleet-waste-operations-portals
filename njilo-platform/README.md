@@ -63,11 +63,12 @@ cp packages/db/.env.example packages/db/.env
 ```
 
 ## Troubleshooting
-- Ensure Docker Desktop is running and ports 5432/5050 are available.
+- Ensure Docker Desktop is running and ports 5433/5050 are available (Postgres now maps to 5433).
 - If migrations fail, run `docker compose down -v` and retry.
 - When updating Prisma schema, re-run `pnpm db:migrate`.
 - If you see `Environment variable not found: DATABASE_URL`, make sure `packages/db/.env` exists (and `.env` if you use root-level env values).
 - If you see `dotenv is not recognized`, re-run `pnpm i` or use the updated scripts that no longer require dotenv-cli.
+- If you see `P1000: Authentication failed`, ensure your `.env` `DATABASE_URL` matches the `POSTGRES_USER`/`POSTGRES_PASSWORD` in `docker-compose.yml`, then run `docker compose down -v` and retry.
 
 ## Optional additions
 - Replace placeholder media in `apps/public-web/public/media/stock` with real assets.
