@@ -29,6 +29,19 @@ enum VacancyStatus {
   CLOSED
 }
 
+enum WorkflowArea {
+  HR_ONBOARDING
+  HR_PERFORMANCE
+  HR_LEAVE
+  HR_TRAINING
+  HR_POLICIES
+  ADMIN_ACCESS
+  ADMIN_SECURITY
+  ADMIN_BUDGET
+  ADMIN_VENDOR
+  ADMIN_COMMS
+}
+
 enum LeadDepartment {
   SALES
   OPS
@@ -233,6 +246,20 @@ model Event {
   summary   String
   eventDate DateTime
   createdAt DateTime @default(now())
+}
+
+model WorkflowItem {
+  id        String       @id @default(cuid())
+  area      WorkflowArea
+  title     String
+  owner     String
+  status    String
+  details   String
+  dueDate   DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([area])
+  @@index([status])
 }
 
 model MediaItem {

@@ -4,11 +4,19 @@ import { revalidatePath } from "next/cache";
 
 async function createDriver(formData: FormData) {
   "use server";
-  const name = String(formData.get("name") || "");
-  const licenseNo = String(formData.get("licenseNo") || "");
+  const name = String(formData.get("name") || "").trim();
+  const licenseNo = String(formData.get("licenseNo") || "").trim();
+  const status = String(formData.get("status") || "Active").trim();
+  const endorsement = String(formData.get("endorsement") || "").trim();
+
+  if (!name || !licenseNo) {
+    return;
+  }
+
+  const driverStatus = endorsement ? `${status} · ${endorsement}` : status;
 
   await prisma.driver.create({
-    data: { name, licenseNo, status: "Active" }
+    data: { name, licenseNo, status: driverStatus }
   });
 
   await prisma.auditLog.create({
@@ -20,7 +28,7 @@ async function createDriver(formData: FormData) {
 
 async function deleteDriver(formData: FormData) {
   "use server";
-  const driverId = String(formData.get("driverId") || "");
+  const driverId = String(formData.get("driverId") || "").trim();
   if (!driverId) return;
 
   await prisma.driver.delete({ where: { id: driverId } });
@@ -40,6 +48,13 @@ export default async function DriversPage() {
         <form action={createDriver} className="grid gap-3 md:grid-cols-2">
           <input name="name" placeholder="Driver name" className="rounded-md border border-slate-200 p-2" required />
           <input name="licenseNo" placeholder="License number" className="rounded-md border border-slate-200 p-2" required />
+          <select name="status" className="rounded-md border border-slate-200 p-2">
+            <option value="Active">Active</option>
+            <option value="On route">On route</option>
+            <option value="Standby">Standby</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+          <input name="endorsement" placeholder="Endorsement / permit" className="rounded-md border border-slate-200 p-2" />
           <Button type="submit" className="md:col-span-2">Save driver</Button>
         </form>
       </Card>
@@ -51,7 +66,8 @@ export default async function DriversPage() {
             <li key={driver.id} className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
                 <p className="font-semibold text-slate-900">{driver.name}</p>
-                <p className="text-slate-500">{driver.licenseNo} · {driver.status}</p>
+                <p className="text-slate-500">{driver.licenseNo}</p>
+                <p className="text-xs text-slate-400">Status: {driver.status}</p>
               </div>
               <form action={deleteDriver}>
                 <input type="hidden" name="driverId" value={driver.id} />
