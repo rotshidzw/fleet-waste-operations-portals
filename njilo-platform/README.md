@@ -69,6 +69,7 @@ cp packages/db/.env.example packages/db/.env
 - If you see `Environment variable not found: DATABASE_URL`, make sure `packages/db/.env` exists (and `.env` if you use root-level env values).
 - If you see `dotenv is not recognized`, re-run `pnpm i` or use the updated scripts that no longer require dotenv-cli.
 - If you see `P1000: Authentication failed`, ensure your `.env` `DATABASE_URL` matches the `POSTGRES_USER`/`POSTGRES_PASSWORD` in `docker-compose.yml`, then run `docker compose down -v` and retry.
+- If you're still blocked on `P1000`, confirm the database is accepting connections: `psql postgresql://njilo:njilo_password@localhost:5433/njilo_platform` (install PostgreSQL client tools if needed).
 
 ## Optional additions
 - Replace placeholder media in `apps/public-web/public/media/stock` with real assets.
