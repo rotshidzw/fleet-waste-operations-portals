@@ -8,9 +8,11 @@ COPY packages/db/package.json packages/db/
 RUN npm install --workspaces --include-workspace-root
 
 COPY . .
+RUN chmod +x /app/docker/entrypoint.sh
 RUN npm --workspace packages/db run generate
 WORKDIR /app/apps/public-web
 RUN npm run build
 
 EXPOSE 3000
+ENTRYPOINT ["/app/docker/entrypoint.sh"]
 CMD ["node", ".next/standalone/server.js"]

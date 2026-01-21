@@ -31,6 +31,8 @@ Intranet: http://localhost:3001 (demo account: admin@njiloconsulting.co.za / adm
 docker compose up --build
 ```
 
+The containers automatically apply the Prisma schema and seed demo data on startup.
+
 ## Scripts
 
 - `npm run lint`
