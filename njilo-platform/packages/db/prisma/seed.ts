@@ -1,36 +1,71 @@
-import { PrismaClient, RoleName, LeadDepartment, OpportunityStage, VacancyStatus } from "@prisma/client";
-import bcrypt from "bcryptjs";
+/* packages/db/prisma/seed.ts */
+
+/**
+ * Seed script for local demo.
+ * Notes:
+ * - We use require("bcryptjs") to avoid TS typing issues when running via ts-node in a monorepo.
+ * - We include a minimal `process` declaration so the file compiles even if VSCode/tsconfig doesn't
+ *   pick up Node types inside this package.
+ */
+
+// Minimal process typing (safe for seed script)
+declare const process: { exitCode?: number };
+
+import {
+  PrismaClient,
+  RoleName,
+  LeadDepartment,
+  OpportunityStage,
+  VacancyStatus
+} from "@prisma/client";
+
+// Reliable import for ts-node seed execution in monorepos
+declare function require(moduleName: string): any;
+const bcrypt = require("bcryptjs") as {
+  hash: (s: string, rounds: number) => Promise<string>;
+};
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // -------------------------
+  // Roles
+  // -------------------------
   const adminRole = await prisma.role.upsert({
     where: { name: RoleName.ADMIN },
     update: {},
     create: { name: RoleName.ADMIN }
   });
+
   await prisma.role.upsert({
     where: { name: RoleName.MANAGER },
     update: {},
     create: { name: RoleName.MANAGER }
   });
+
   await prisma.role.upsert({
     where: { name: RoleName.OPS },
     update: {},
     create: { name: RoleName.OPS }
   });
+
   await prisma.role.upsert({
     where: { name: RoleName.HR },
     update: {},
     create: { name: RoleName.HR }
   });
+
   await prisma.role.upsert({
     where: { name: RoleName.READ_ONLY },
     update: {},
     create: { name: RoleName.READ_ONLY }
   });
 
+  // -------------------------
+  // Users
+  // -------------------------
   const password = await bcrypt.hash("Welcome123!", 10);
+
   await prisma.user.upsert({
     where: { email: "admin@njilo.local" },
     update: {},
@@ -42,6 +77,9 @@ async function main() {
     }
   });
 
+  // -------------------------
+  // Services
+  // -------------------------
   await prisma.service.createMany({
     skipDuplicates: true,
     data: [
@@ -160,6 +198,9 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Partners
+  // -------------------------
   await prisma.partner.createMany({
     skipDuplicates: true,
     data: [
@@ -169,14 +210,28 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Testimonials
+  // -------------------------
   await prisma.testimonial.createMany({
     skipDuplicates: true,
     data: [
-      { client: "A. Nkosi", quote: "Njilo delivers consistent uptime and executive-ready reporting.", role: "Operations Director" },
-      { client: "L. Patel", quote: "Their compliance workflow reduced our fines exposure dramatically.", role: "Fleet Manager" }
+      {
+        client: "A. Nkosi",
+        quote: "Njilo delivers consistent uptime and executive-ready reporting.",
+        role: "Operations Director"
+      },
+      {
+        client: "L. Patel",
+        quote: "Their compliance workflow reduced our fines exposure dramatically.",
+        role: "Fleet Manager"
+      }
     ]
   });
 
+  // -------------------------
+  // Leads
+  // -------------------------
   await prisma.lead.createMany({
     skipDuplicates: true,
     data: [
@@ -201,6 +256,9 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Opportunities
+  // -------------------------
   await prisma.opportunity.createMany({
     skipDuplicates: true,
     data: [
@@ -209,14 +267,30 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Vacancies
+  // -------------------------
   await prisma.vacancy.createMany({
     skipDuplicates: true,
     data: [
-      { title: "Fleet Operations Coordinator", location: "Johannesburg", status: VacancyStatus.ACTIVE, summary: "Coordinate fleet schedules and vendor delivery." },
-      { title: "HR Business Partner", location: "Cape Town", status: VacancyStatus.CLOSED, summary: "Support talent operations and compliance." }
+      {
+        title: "Fleet Operations Coordinator",
+        location: "Johannesburg",
+        status: VacancyStatus.ACTIVE,
+        summary: "Coordinate fleet schedules and vendor delivery."
+      },
+      {
+        title: "HR Business Partner",
+        location: "Cape Town",
+        status: VacancyStatus.CLOSED,
+        summary: "Support talent operations and compliance."
+      }
     ]
   });
 
+  // -------------------------
+  // Vehicles
+  // -------------------------
   await prisma.vehicle.createMany({
     skipDuplicates: true,
     data: [
@@ -225,6 +299,9 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Waste Jobs
+  // -------------------------
   await prisma.wasteJob.createMany({
     skipDuplicates: true,
     data: [
@@ -232,12 +309,14 @@ async function main() {
       { jobNumber: "WJ-1002", status: "In Progress", site: "Durban Port", scheduledAt: new Date() }
     ]
   });
+
+  console.log("✅ Seed completed");
 }
 
 main()
   .catch((error) => {
-    console.error(error);
-    process.exit(1);
+    console.error("❌ Seed failed:", error);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();
