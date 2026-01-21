@@ -54,24 +54,34 @@ export function NavDropdown({ label, href, childrenItems }: NavDropdownProps) {
       className="group relative"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onFocusCapture={() => setOpen(true)}
+      onBlurCapture={(event) => {
+        if (ref.current && !ref.current.contains(event.relatedTarget as Node)) {
+          setOpen(false);
+        }
+      }}
     >
-      <button
-        type="button"
-        onClick={() => setOpen((prev) => !prev)}
-        onKeyDown={handleKeyDown}
-        className="flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-blue-800 dark:text-slate-200 dark:hover:text-white"
-        aria-haspopup={childrenItems ? "menu" : undefined}
-        aria-expanded={open}
-      >
-        <span>{label}</span>
-        {childrenItems && <span className="text-xs">▾</span>}
-      </button>
-
-      {!childrenItems && (
-        <Link href={href} className="sr-only">
+      <div className="flex items-center gap-1">
+        <Link
+          href={href}
+          className="text-sm font-medium text-slate-700 transition hover:text-blue-800 dark:text-slate-200 dark:hover:text-white"
+        >
           {label}
         </Link>
-      )}
+        {childrenItems && (
+          <button
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+            onKeyDown={handleKeyDown}
+            className="rounded-full px-1 text-xs text-slate-500 transition hover:text-blue-800 dark:text-slate-300"
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-label={`Toggle ${label} menu`}
+          >
+            ▾
+          </button>
+        )}
+      </div>
 
       {childrenItems && (
         <AnimatePresence>
