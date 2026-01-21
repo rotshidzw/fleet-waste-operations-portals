@@ -11,6 +11,20 @@ Enterprise-grade public website + private intranet, built for local-first develo
 
 ## Quickstart (Windows / Docker Desktop)
 
+### Prerequisites (Windows)
+- Install **Node.js 20+** (LTS recommended).
+- Install **pnpm**: `corepack enable` then `corepack prepare pnpm@9.12.2 --activate`.
+- Install **Docker Desktop** and ensure it is running.
+
+### What you need to add
+Create local environment files from the examples and set values:
+- `.env` (repo root): update `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
+- `apps/public-web/.env`: set `DATABASE_URL` (used by server actions).
+- `apps/intranet/.env`: set `DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.
+- `packages/db/.env`: set `DATABASE_URL`.
+
+You can keep the default local database values if you use the provided Docker Compose config.
+
 ```bash
 pnpm i
 ```
@@ -52,6 +66,10 @@ cp packages/db/.env.example packages/db/.env
 - Ensure Docker Desktop is running and ports 5432/5050 are available.
 - If migrations fail, run `docker compose down -v` and retry.
 - When updating Prisma schema, re-run `pnpm db:migrate`.
+
+## Optional additions
+- Replace placeholder media in `apps/public-web/public/media/stock` with real assets.
+- Update `apps/public-web/public/media/asset-manifest.json` to match new files.
 
 ## One-command local run
 
