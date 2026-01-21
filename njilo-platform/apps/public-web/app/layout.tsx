@@ -5,6 +5,7 @@ import { Footer } from "../components/Footer";
 import { ThemeProvider } from "../components/ThemeProvider";
 import { QuoteModalProvider } from "../components/QuoteModalProvider";
 import { PageTransition } from "../components/PageTransition";
+import { ChatWidget } from "../components/ChatWidget";
 import { Inter, Manrope } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Navbar />
             <PageTransition>{children}</PageTransition>
             <Footer />
+            <ChatWidget />
           </QuoteModalProvider>
         </ThemeProvider>
       </body>

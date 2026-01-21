@@ -197,6 +197,20 @@ export default function HomePage() {
 
       <Section title="Trusted by partners" subtitle="Long-term relationships across public and private sectors.">
         <PartnerCarousel />
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+            <p className="font-semibold text-slate-900 dark:text-white">Integrated reporting</p>
+            <p className="mt-2">Unified dashboards and real-time KPI tracking across regions.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+            <p className="font-semibold text-slate-900 dark:text-white">Service reliability</p>
+            <p className="mt-2">Multi-tier SLA coverage and 24/7 escalation support.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+            <p className="font-semibold text-slate-900 dark:text-white">Partnership enablement</p>
+            <p className="mt-2">Co-branded reporting and executive sponsorship programs.</p>
+          </div>
+        </div>
       </Section>
 
       <Section title="Testimonials" subtitle="What our clients say about Njilo.">

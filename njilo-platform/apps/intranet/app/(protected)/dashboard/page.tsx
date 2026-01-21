@@ -112,6 +112,24 @@ export default async function DashboardPage() {
           </ul>
         </Card>
       </div>
+
+      <Card title="Birthdays & milestones" description="Send a quick message to celebrate team members.">
+        <div className="grid gap-3 md:grid-cols-3">
+          {[
+            { name: "Thabo Nkosi", date: "Tomorrow" },
+            { name: "Ayesha Patel", date: "Next week" },
+            { name: "Sipho Dlamini", date: "23 Sep" }
+          ].map((item) => (
+            <div key={item.name} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
+              <p className="font-semibold text-slate-900">{item.name}</p>
+              <p className="text-slate-500">Birthday · {item.date}</p>
+              <button className="mt-3 rounded-md border border-slate-200 px-3 py-1 text-xs text-slate-600">
+                Draft message
+              </button>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
