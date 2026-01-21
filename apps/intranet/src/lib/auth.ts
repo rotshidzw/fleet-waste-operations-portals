@@ -46,7 +46,11 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role: string }).role;
+        if ("role" in user && typeof user.role === "string") {
+          token.role = user.role;
+        } else {
+          token.role = token.role ?? "READONLY";
+        }
       }
       return token;
     },
