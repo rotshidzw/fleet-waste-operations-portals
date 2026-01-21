@@ -1,0 +1,68 @@
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: njilo
+      POSTGRES_PASSWORD: njilo
+      POSTGRES_DB: njilo
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U njilo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db-init:
+    image: node:20-bullseye-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: postgresql://njilo:njilo@db:5432/njilo
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install --workspaces --include-workspace-root && npm --workspace packages/db run generate && npx prisma db push --schema /app/packages/db/prisma/schema.prisma && npm --workspace packages/db run seed"
+      ]
+
+  public-web:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.public
+    environment:
+      DATABASE_URL: postgresql://njilo:njilo@db:5432/njilo
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+  intranet:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.intranet
+    environment:
+      DATABASE_URL: postgresql://njilo:njilo@db:5432/njilo
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: supersecret
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:

@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  OPS
+  HR
+  READONLY
+  CLIENT
+}
+
+enum VacancyStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum DealStage {
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum ActivityType {
+  CALL
+  MEETING
+  NOTE
+  EMAIL
+}
+
+enum WorkOrderStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum LeadSource {
+  WEBSITE
+  REFERRAL
+  PARTNER
+  OTHER
+}
+
+enum JobStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStage {
+  RECEIVED
+  SCREENING
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(READONLY)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   String?
+  message   String
+  source    LeadSource @default(WEBSITE)
+  activities Activity[]
+  createdAt DateTime   @default(now())
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  sector    String?
+  contacts  Contact[]
+  deals     Deal[]
+  createdAt DateTime @default(now())
+}
+
+model Contact {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+  createdAt DateTime @default(now())
+}
+
+model Deal {
+  id        String    @id @default(cuid())
+  name      String
+  value     Float
+  stage     DealStage @default(QUALIFIED)
+  company   Company?  @relation(fields: [companyId], references: [id])
+  companyId String?
+  activities Activity[]
+  createdAt DateTime  @default(now())
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  type      ActivityType
+  notes     String
+  lead      Lead?        @relation(fields: [leadId], references: [id])
+  leadId    String?
+  deal      Deal?        @relation(fields: [dealId], references: [id])
+  dealId    String?
+  createdAt DateTime     @default(now())
+}
+
+model Vehicle {
+  id        String   @id @default(cuid())
+  vin       String
+  plate     String
+  status    String
+  assignedTo String?
+  workOrders WorkOrder[]
+  createdAt DateTime @default(now())
+}
+
+model Driver {
+  id        String   @id @default(cuid())
+  name      String
+  license   String
+  phone     String?
+  createdAt DateTime @default(now())
+}
+
+model WorkOrder {
+  id        String          @id @default(cuid())
+  title     String
+  status    WorkOrderStatus @default(OPEN)
+  vehicle   Vehicle?        @relation(fields: [vehicleId], references: [id])
+  vehicleId String?
+  createdAt DateTime        @default(now())
+}
+
+model TrafficFine {
+  id        String   @id @default(cuid())
+  reference String
+  amount    Float
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model FuelLog {
+  id        String   @id @default(cuid())
+  vehicleId String
+  litres    Float
+  cost      Float
+  loggedAt  DateTime @default(now())
+}
+
+model WasteJob {
+  id        String    @id @default(cuid())
+  client    String
+  location  String
+  jobDate   DateTime
+  status    JobStatus @default(SCHEDULED)
+  createdAt DateTime  @default(now())
+}
+
+model Equipment {
+  id        String   @id @default(cuid())
+  name      String
+  type      String
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model ComplianceNote {
+  id        String   @id @default(cuid())
+  summary   String
+  createdAt DateTime @default(now())
+}
+
+model Vacancy {
+  id          String         @id @default(cuid())
+  title       String
+  location    String
+  description String
+  status      VacancyStatus  @default(ACTIVE)
+  createdAt   DateTime       @default(now())
+  applications Application[]
+}
+
+model Application {
+  id        String           @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  stage     ApplicationStage @default(RECEIVED)
+  vacancy   Vacancy?         @relation(fields: [vacancyId], references: [id])
+  vacancyId String?
+  createdAt DateTime         @default(now())
+}
+
+model PartnerLogo {
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String
+  order     Int
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  quote     String
+  createdAt DateTime @default(now())
+}
+
+model Publication {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  date      DateTime
+  pdfUrl    String?
+  createdAt DateTime @default(now())
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+model MediaItem {
+  id        String   @id @default(cuid())
+  title     String
+  type      MediaType
+  url       String
+  createdAt DateTime @default(now())
+}
+
+model VideoItem {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  provider  String
+  createdAt DateTime @default(now())
+}
+
+model ServiceBlock {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  heroImage String
+  content   String
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  title     String
+  url       String
+  folder    String
+  role      Role
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userEmail String
+  action    String
+  entity    String
+  createdAt DateTime @default(now())
+}
