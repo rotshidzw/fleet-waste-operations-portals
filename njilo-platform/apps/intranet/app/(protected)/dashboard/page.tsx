@@ -1,6 +1,9 @@
 import { prisma } from "@njilo/db";
 import { Card, Button } from "@njilo/ui";
 import { revalidatePath } from "next/cache";
+import { BirthdayDrafts } from "../../../components/BirthdayDrafts";
+import { IntranetCapabilities } from "../../../components/IntranetCapabilities";
+import { MarketPulse } from "../../../components/MarketPulse";
 
 async function createTodo(formData: FormData) {
   "use server";
@@ -113,52 +116,16 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
+      <Card title="Market pulse" description="Visual trend bars for pipeline health and execution.">
+        <MarketPulse />
+      </Card>
+
       <Card title="Birthdays & milestones" description="Send a quick message to celebrate team members.">
-        <div className="grid gap-3 md:grid-cols-3">
-          {[
-            { name: "Thabo Nkosi", date: "Tomorrow" },
-            { name: "Ayesha Patel", date: "Next week" },
-            { name: "Sipho Dlamini", date: "23 Sep" }
-          ].map((item) => (
-            <div key={item.name} className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-sm">
-              <p className="font-semibold text-slate-900">{item.name}</p>
-              <p className="text-slate-500">Birthday · {item.date}</p>
-              <button className="mt-3 rounded-md border border-slate-200 px-3 py-1 text-xs text-slate-600">
-                Draft message
-              </button>
-            </div>
-          ))}
-        </div>
+        <BirthdayDrafts />
       </Card>
 
       <Card title="Intranet capabilities" description="Expanded feature set across operations, CRM, HR, and compliance.">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            "Opportunity pipeline views",
-            "Customer lifecycle tracking",
-            "Driver telemetry snapshots",
-            "Fleet maintenance scheduling",
-            "Waste job SLA monitoring",
-            "Compliance note library",
-            "HR candidate vault",
-            "Leave & absence planning",
-            "Supplier governance",
-            "Audit trail export",
-            "Role-based dashboards",
-            "Executive KPI summaries",
-            "Incident response logs",
-            "Asset utilization heatmaps",
-            "Service catalog publishing",
-            "Media & publications hub"
-          ].map((feature) => (
-            <div
-              key={feature}
-              className="rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-600"
-            >
-              {feature}
-            </div>
-          ))}
-        </div>
+        <IntranetCapabilities />
       </Card>
     </div>
   );

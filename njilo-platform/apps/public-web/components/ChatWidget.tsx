@@ -4,6 +4,9 @@ import { useState } from "react";
 
 export function ChatWidget() {
   const [open, setOpen] = useState(false);
+  const [messages, setMessages] = useState<string[]>([
+    "Hi there! I can help you find the right service mix."
+  ]);
 
   return (
     <div className="fixed bottom-6 right-6 z-[70]">
@@ -13,8 +16,30 @@ export function ChatWidget() {
           <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
             Ask us about fleet, waste, or plant services. Demo responses only.
           </p>
-          <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-950">
-            “Hi there! I can help you find the right service mix.”
+          <div className="mt-3 space-y-2">
+            {messages.map((message, index) => (
+              <div
+                key={`${message}-${index}`}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-2 text-xs text-slate-500 dark:border-slate-700 dark:bg-slate-950"
+              >
+                {message}
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={() => setMessages((prev) => [...prev, "Please share your fleet size and routes."])}
+              className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300"
+            >
+              Ask a question
+            </button>
+            <a
+              href="https://wa.me/27115551000"
+              className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-600 dark:border-slate-700 dark:text-slate-300"
+            >
+              WhatsApp
+            </a>
           </div>
         </div>
       )}

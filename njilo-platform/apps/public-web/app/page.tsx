@@ -104,6 +104,24 @@ export default function HomePage() {
         </div>
       </Section>
 
+      <Section title="Operational galleries" subtitle="A glimpse into fleet, waste, and plant delivery.">
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { src: "/media/hero/hero-fleet.svg", label: "Fleet coverage" },
+            { src: "/media/hero/hero-waste.svg", label: "Waste operations" },
+            { src: "/media/hero/hero-plant.svg", label: "Plant & equipment" }
+          ].map((item) => (
+            <div key={item.label} className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+              <div className="relative h-40 overflow-hidden rounded-xl">
+                <Image src={item.src} alt={item.label} fill className="object-cover" />
+              </div>
+              <p className="mt-3 text-sm font-semibold text-slate-900 dark:text-white">{item.label}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-300">Swap in custom photography anytime.</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
       <Section title="Services highlights" subtitle="Capability-focused services designed for compliance and resilience.">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {highlights.map((item) => (
