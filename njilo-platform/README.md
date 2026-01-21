@@ -66,10 +66,12 @@ cp packages/db/.env.example packages/db/.env
 - Ensure Docker Desktop is running and ports 5432/5050 are available.
 - If migrations fail, run `docker compose down -v` and retry.
 - When updating Prisma schema, re-run `pnpm db:migrate`.
+- If you see `Environment variable not found: DATABASE_URL`, make sure `.env` exists at the repo root.
 
 ## Optional additions
 - Replace placeholder media in `apps/public-web/public/media/stock` with real assets.
 - Update `apps/public-web/public/media/asset-manifest.json` to match new files.
+- Update `PGADMIN_DEFAULT_EMAIL` in `docker-compose.yml` to your preferred email if desired.
 
 ## One-command local run
 
