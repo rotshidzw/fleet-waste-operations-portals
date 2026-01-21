@@ -1,6 +1,7 @@
 import { prisma } from "@njilo/db";
-import { requireRole } from "../../../lib/rbac";
+import { requireRole } from "@/lib/rbac";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createLead(formData: FormData) {
   "use server";
@@ -16,15 +17,46 @@ async function createLead(formData: FormData) {
       source: "intranet"
     }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Lead", entityId: email }
+  });
+
+  revalidatePath("/crm/leads");
+  revalidatePath("/dashboard");
+}
+
+async function deleteLead(formData: FormData) {
+  "use server";
+  const leadId = String(formData.get("leadId") || "");
+  if (!leadId) return;
+
+  await prisma.lead.delete({ where: { id: leadId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "Lead", entityId: leadId }
+  });
+
+  revalidatePath("/crm/leads");
+  revalidatePath("/dashboard");
 }
 
 export default async function LeadsPage() {
-  const { role } = await requireRole(["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"]);
+  const { role, isAllowed } = await requireRole(["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"]);
   const leads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 20 });
 
   return (
     <div className="space-y-6">
-      {role !== "READ_ONLY" && (
+      {!isAllowed && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          Demo access only: you can view records, but edits are disabled for this role.
+        </div>
+      )}
+      {role === "READ_ONLY" && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+          Read-only mode: create and edit actions are disabled.
+        </div>
+      )}
+      {role !== "READ_ONLY" && isAllowed && (
         <Card title="Create lead" description="Capture new inbound leads.">
           <form action={createLead} className="grid gap-3 md:grid-cols-2">
             <input name="fullName" placeholder="Full name" className="rounded-md border border-slate-200 p-2" required />
@@ -49,7 +81,17 @@ export default async function LeadsPage() {
                 <p className="font-semibold text-slate-900">{lead.fullName}</p>
                 <p className="text-slate-500">{lead.email}</p>
               </div>
-              <span className="text-xs uppercase text-slate-400">{lead.department}</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs uppercase text-slate-400">{lead.department}</span>
+                {role !== "READ_ONLY" && (
+                  <form action={deleteLead}>
+                    <input type="hidden" name="leadId" value={lead.id} />
+                    <Button type="submit" variant="ghost" className="px-3 py-1 text-xs">
+                      Delete
+                    </Button>
+                  </form>
+                )}
+              </div>
             </div>
           ))}
         </div>

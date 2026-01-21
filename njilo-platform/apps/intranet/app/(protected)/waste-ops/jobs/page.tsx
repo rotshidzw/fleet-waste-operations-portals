@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createJob(formData: FormData) {
   "use server";
@@ -9,6 +10,27 @@ async function createJob(formData: FormData) {
   await prisma.wasteJob.create({
     data: { jobNumber, site, status: "Scheduled", scheduledAt: new Date() }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "WasteJob", entityId: jobNumber }
+  });
+
+  revalidatePath("/waste-ops/jobs");
+  revalidatePath("/dashboard");
+}
+
+async function deleteJob(formData: FormData) {
+  "use server";
+  const jobId = String(formData.get("jobId") || "");
+  if (!jobId) return;
+
+  await prisma.wasteJob.delete({ where: { id: jobId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "WasteJob", entityId: jobId }
+  });
+
+  revalidatePath("/waste-ops/jobs");
+  revalidatePath("/dashboard");
 }
 
 export default async function WasteJobsPage() {
@@ -28,9 +50,17 @@ export default async function WasteJobsPage() {
         <h2 className="text-lg font-semibold text-slate-900">Jobs</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {jobs.map((job) => (
-            <li key={job.id} className="border-b border-slate-100 pb-3">
-              <p className="font-semibold text-slate-900">{job.jobNumber}</p>
-              <p className="text-slate-500">{job.site} · {job.status}</p>
+            <li key={job.id} className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <p className="font-semibold text-slate-900">{job.jobNumber}</p>
+                <p className="text-slate-500">{job.site} · {job.status}</p>
+              </div>
+              <form action={deleteJob}>
+                <input type="hidden" name="jobId" value={job.id} />
+                <Button type="submit" variant="ghost" className="px-3 py-1 text-xs">
+                  Delete
+                </Button>
+              </form>
             </li>
           ))}
         </ul>

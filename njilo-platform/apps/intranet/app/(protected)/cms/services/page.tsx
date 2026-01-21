@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createService(formData: FormData) {
   "use server";
@@ -13,6 +14,13 @@ async function createService(formData: FormData) {
   await prisma.service.create({
     data: { title, slug, category, summary, body, heroImage }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Service", entityId: slug }
+  });
+
+  revalidatePath("/cms/services");
+  revalidatePath("/our-services");
 }
 
 export default async function ServicesCmsPage() {

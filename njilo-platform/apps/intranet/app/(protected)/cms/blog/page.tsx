@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createPost(formData: FormData) {
   "use server";
@@ -11,6 +12,13 @@ async function createPost(formData: FormData) {
   await prisma.blogPost.create({
     data: { title, slug, summary, body }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "BlogPost", entityId: slug }
+  });
+
+  revalidatePath("/cms/blog");
+  revalidatePath("/our-impact/blog");
 }
 
 export default async function BlogPage() {

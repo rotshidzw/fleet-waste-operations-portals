@@ -3,27 +3,29 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useQuoteModal } from "./QuoteModalProvider";
 
 const slides = [
   {
     title: "Integrated Fleet & Waste Solutions",
     description: "Enterprise-grade fleet, waste, and compliance operations with measurable outcomes.",
-    image: "/media/stock/hero-1.svg"
+    image: "/media/hero/hero-fleet.svg"
   },
   {
     title: "Operational Resilience at Scale",
     description: "Predictable cost structures and service continuity across regions.",
-    image: "/media/stock/hero-2.svg"
+    image: "/media/hero/hero-waste.svg"
   },
   {
     title: "Compliance, Insight, Control",
     description: "Live reporting, governance workflows, and executive dashboards.",
-    image: "/media/stock/hero-3.svg"
+    image: "/media/hero/hero-plant.svg"
   }
 ];
 
 export function HeroSlider() {
   const [active, setActive] = useState(0);
+  const { openModal } = useQuoteModal();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,7 +37,7 @@ export function HeroSlider() {
   const slide = slides[active];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-blue-900 text-white">
+    <div className="relative overflow-hidden rounded-3xl bg-blue-900 text-white shadow-2xl">
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.title}
@@ -50,8 +52,18 @@ export function HeroSlider() {
             <h1 className="mt-4 text-4xl font-semibold leading-tight lg:text-5xl">{slide.title}</h1>
             <p className="mt-4 text-lg text-slate-200">{slide.description}</p>
             <div className="mt-8 flex gap-4">
-              <button className="rounded-md bg-orange-500 px-6 py-3 text-sm font-semibold text-white">Request a Quote</button>
-              <button className="rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white">Explore Services</button>
+              <button
+                onClick={openModal}
+                className="rounded-md bg-orange-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
+              >
+                Request a Quote
+              </button>
+              <a
+                href="/our-services"
+                className="rounded-md border border-white/30 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
+              >
+                Explore Services
+              </a>
             </div>
           </div>
           <div className="relative min-h-[260px]">
@@ -71,6 +83,7 @@ export function HeroSlider() {
             key={item.title}
             onClick={() => setActive(index)}
             className={`h-2 w-10 rounded-full ${index === active ? "bg-orange-400" : "bg-white/40"}`}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>

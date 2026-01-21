@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createVehicle(formData: FormData) {
   "use server";
@@ -11,6 +12,27 @@ async function createVehicle(formData: FormData) {
   await prisma.vehicle.create({
     data: { vin, make, model, year, status: "Active" }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Vehicle", entityId: vin }
+  });
+
+  revalidatePath("/fleet-ops/vehicles");
+  revalidatePath("/dashboard");
+}
+
+async function deleteVehicle(formData: FormData) {
+  "use server";
+  const vehicleId = String(formData.get("vehicleId") || "");
+  if (!vehicleId) return;
+
+  await prisma.vehicle.delete({ where: { id: vehicleId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "Vehicle", entityId: vehicleId }
+  });
+
+  revalidatePath("/fleet-ops/vehicles");
+  revalidatePath("/dashboard");
 }
 
 export default async function VehiclesPage() {
@@ -32,9 +54,17 @@ export default async function VehiclesPage() {
         <h2 className="text-lg font-semibold text-slate-900">Vehicles</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {vehicles.map((vehicle) => (
-            <li key={vehicle.id} className="border-b border-slate-100 pb-3">
-              <p className="font-semibold text-slate-900">{vehicle.make} {vehicle.model}</p>
-              <p className="text-slate-500">{vehicle.vin} · {vehicle.year} · {vehicle.status}</p>
+            <li key={vehicle.id} className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <p className="font-semibold text-slate-900">{vehicle.make} {vehicle.model}</p>
+                <p className="text-slate-500">{vehicle.vin} · {vehicle.year} · {vehicle.status}</p>
+              </div>
+              <form action={deleteVehicle}>
+                <input type="hidden" name="vehicleId" value={vehicle.id} />
+                <Button type="submit" variant="ghost" className="px-3 py-1 text-xs">
+                  Delete
+                </Button>
+              </form>
             </li>
           ))}
         </ul>

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createNote(formData: FormData) {
   "use server";
@@ -8,6 +9,12 @@ async function createNote(formData: FormData) {
   await prisma.complianceNote.create({
     data: { note }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "ComplianceNote", entityId: note.slice(0, 24) }
+  });
+
+  revalidatePath("/waste-ops/compliance-notes");
 }
 
 export default async function ComplianceNotesPage() {

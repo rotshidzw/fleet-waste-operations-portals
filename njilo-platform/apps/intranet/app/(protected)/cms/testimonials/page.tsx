@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createTestimonial(formData: FormData) {
   "use server";
@@ -10,6 +11,13 @@ async function createTestimonial(formData: FormData) {
   await prisma.testimonial.create({
     data: { client, quote, role }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Testimonial", entityId: client }
+  });
+
+  revalidatePath("/cms/testimonials");
+  revalidatePath("/testimonials");
 }
 
 export default async function TestimonialsPage() {

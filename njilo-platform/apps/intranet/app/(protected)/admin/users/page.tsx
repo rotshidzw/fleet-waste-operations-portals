@@ -1,7 +1,8 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "@njilo/db";
-import { requireRole } from "../../../lib/rbac";
+import { requireRole } from "@/lib/rbac";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createUser(formData: FormData) {
   "use server";
@@ -19,34 +20,45 @@ async function createUser(formData: FormData) {
   await prisma.auditLog.create({
     data: { action: "CREATE", entity: "User", entityId: email }
   });
+
+  revalidatePath("/admin/users");
+  revalidatePath("/admin/audit-log");
 }
 
 export default async function UsersPage() {
-  const { isAllowed } = await requireRole(["ADMIN"]);
-
-  if (!isAllowed) {
-    return <div className="rounded-lg border border-slate-200 bg-white p-6">Access denied.</div>;
-  }
+  const { isAllowed, role } = await requireRole(["ADMIN"]);
 
   const users = await prisma.user.findMany({ include: { role: true } });
   const roles = await prisma.role.findMany({ orderBy: { name: "asc" } });
 
   return (
     <div className="space-y-6">
-      <Card title="Create user" description="Provision new intranet users.">
-        <form action={createUser} className="grid gap-3 md:grid-cols-2">
-          <input name="name" placeholder="Name" className="rounded-md border border-slate-200 p-2" required />
-          <input name="email" type="email" placeholder="Email" className="rounded-md border border-slate-200 p-2" required />
-          <select name="roleId" className="rounded-md border border-slate-200 p-2" required>
-            <option value="">Select role</option>
-            {roles.map((role) => (
-              <option key={role.id} value={role.id}>{role.name}</option>
-            ))}
-          </select>
-          <input name="password" type="password" placeholder="Temporary password" className="rounded-md border border-slate-200 p-2" required />
-          <Button type="submit" className="md:col-span-2">Save user</Button>
-        </form>
-      </Card>
+      {!isAllowed && (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          Demo access only: you can view users, but admin actions are disabled for the {role} role.
+        </div>
+      )}
+      {role === "READ_ONLY" && (
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+          Read-only mode: create and edit actions are disabled.
+        </div>
+      )}
+      {isAllowed && role !== "READ_ONLY" && (
+        <Card title="Create user" description="Provision new intranet users.">
+          <form action={createUser} className="grid gap-3 md:grid-cols-2">
+            <input name="name" placeholder="Name" className="rounded-md border border-slate-200 p-2" required />
+            <input name="email" type="email" placeholder="Email" className="rounded-md border border-slate-200 p-2" required />
+            <select name="roleId" className="rounded-md border border-slate-200 p-2" required>
+              <option value="">Select role</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>{role.name}</option>
+              ))}
+            </select>
+            <input name="password" type="password" placeholder="Temporary password" className="rounded-md border border-slate-200 p-2" required />
+            <Button type="submit" className="md:col-span-2">Save user</Button>
+          </form>
+        </Card>
+      )}
 
       <div className="rounded-xl border border-slate-200 bg-white p-6">
         <h2 className="text-lg font-semibold text-slate-900">Users</h2>

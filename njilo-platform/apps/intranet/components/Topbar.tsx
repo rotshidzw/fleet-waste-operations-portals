@@ -1,6 +1,6 @@
 "use client";
 
-import { signOut } from "next-auth/react";
+import { RoleSwitcher } from "./RoleSwitcher";
 
 type TopbarProps = {
   userName: string;
@@ -14,12 +14,7 @@ export function Topbar({ userName, role }: TopbarProps) {
         <h1 className="text-lg font-semibold text-slate-900">Welcome back, {userName}</h1>
         <p className="text-xs text-slate-500">Role: {role ?? "User"}</p>
       </div>
-      <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        className="rounded-md border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:border-blue-700 hover:text-blue-700"
-      >
-        Sign out
-      </button>
+      <RoleSwitcher />
     </header>
   );
 }

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createVacancy(formData: FormData) {
   "use server";
@@ -11,6 +12,26 @@ async function createVacancy(formData: FormData) {
   await prisma.vacancy.create({
     data: { title, location, status: status as "ACTIVE" | "CLOSED", summary }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Vacancy", entityId: title }
+  });
+
+  revalidatePath("/hr/vacancies");
+  revalidatePath("/careers/active-vacancies");
+}
+
+async function deleteVacancy(formData: FormData) {
+  "use server";
+  const vacancyId = String(formData.get("vacancyId") || "");
+  if (!vacancyId) return;
+
+  await prisma.vacancy.delete({ where: { id: vacancyId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "Vacancy", entityId: vacancyId }
+  });
+
+  revalidatePath("/hr/vacancies");
 }
 
 export default async function VacanciesPage() {
@@ -35,9 +56,17 @@ export default async function VacanciesPage() {
         <h2 className="text-lg font-semibold text-slate-900">Vacancies</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {vacancies.map((vacancy) => (
-            <li key={vacancy.id} className="border-b border-slate-100 pb-3">
-              <p className="font-semibold text-slate-900">{vacancy.title}</p>
-              <p className="text-slate-500">{vacancy.location} · {vacancy.status}</p>
+            <li key={vacancy.id} className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <p className="font-semibold text-slate-900">{vacancy.title}</p>
+                <p className="text-slate-500">{vacancy.location} · {vacancy.status}</p>
+              </div>
+              <form action={deleteVacancy}>
+                <input type="hidden" name="vacancyId" value={vacancy.id} />
+                <Button type="submit" variant="ghost" className="px-3 py-1 text-xs">
+                  Delete
+                </Button>
+              </form>
             </li>
           ))}
         </ul>
