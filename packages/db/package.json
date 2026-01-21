@@ -10,7 +10,8 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^5.18.0"
+    "@prisma/client": "^5.18.0",
+    "@njilo/config": "*"
   },
   "devDependencies": {
     "prisma": "^5.18.0",

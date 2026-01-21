@@ -2,23 +2,32 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [error, setError] = useState("");
+  const router = useRouter();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const response = await signIn("credentials", {
-      redirect: true,
-      callbackUrl: "/dashboard",
+      redirect: false,
       email: formData.get("email"),
       password: formData.get("password")
     });
 
+    if (response?.ok) {
+      router.push("/dashboard");
+      return;
+    }
+
     if (response?.error) {
       setError("Invalid credentials.");
+      return;
     }
+
+    setError("Login failed. Please try again.");
   }
 
   return (

@@ -31,7 +31,7 @@ services:
       [
         "sh",
         "-c",
-        "npm install --workspace packages/db && npm --workspace packages/db run generate && npx prisma db push --schema /app/packages/db/prisma/schema.prisma && npm --workspace packages/db run seed"
+        "npm install --workspaces --include-workspace-root && npm --workspace packages/db run generate && npx prisma db push --schema /app/packages/db/prisma/schema.prisma && npm --workspace packages/db run seed"
       ]
 
   public-web:
