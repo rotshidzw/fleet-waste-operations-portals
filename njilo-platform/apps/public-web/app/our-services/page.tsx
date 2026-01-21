@@ -16,7 +16,10 @@ export default async function OurServicesPage() {
       <Section title="Categories" subtitle="Filter by operational discipline.">
         <div className="flex flex-wrap gap-3">
           {categories.map((category) => (
-            <span key={category} className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-600">
+            <span
+              key={category}
+              className="rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-600 dark:border-slate-700 dark:text-slate-300"
+            >
               {category}
             </span>
           ))}
@@ -26,7 +29,7 @@ export default async function OurServicesPage() {
         <div className="grid gap-6 md:grid-cols-2">
           {services.map((service) => (
             <Card key={service.id} title={service.title} description={service.summary}>
-              <Link href={`/services/${service.slug}`} className="text-sm font-semibold text-blue-700">
+              <Link href={`/services/${service.slug}`} className="text-sm font-semibold text-blue-700 dark:text-blue-300">
                 View service →
               </Link>
             </Card>

@@ -1,0 +1,16 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="complianceGradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0E7A4F" />
+      <stop offset="100%" stop-color="#123062" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="900" rx="48" fill="url(#complianceGradient)" />
+  <rect x="160" y="480" width="660" height="200" rx="34" fill="#0A1E3F" />
+  <rect x="760" y="420" width="280" height="170" rx="24" fill="#2459A8" />
+  <circle cx="260" cy="690" r="48" fill="#F8FAFC" />
+  <circle cx="560" cy="690" r="48" fill="#F8FAFC" />
+  <circle cx="840" cy="690" r="48" fill="#F8FAFC" />
+  <rect x="260" y="240" width="480" height="160" rx="32" fill="#F28C28" opacity="0.2" />
+  <path d="M360 320L430 380L560 260" stroke="#F8FAFC" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
