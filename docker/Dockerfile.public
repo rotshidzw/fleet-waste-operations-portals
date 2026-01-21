@@ -1,4 +1,4 @@
-FROM node:20-bullseye-slim
+FROM node:20-bullseye-slim AS builder
 
 WORKDIR /app
 COPY package.json package-lock.json* ./
@@ -8,11 +8,17 @@ COPY packages/db/package.json packages/db/
 RUN npm install --workspaces --include-workspace-root
 
 COPY . .
-RUN chmod +x /app/docker/entrypoint.sh
 RUN npm --workspace packages/db run generate
 WORKDIR /app/apps/public-web
 RUN npm run build
 
+FROM node:20-bullseye-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/apps/public-web/.next/standalone ./
+COPY --from=builder /app/apps/public-web/.next/static ./apps/public-web/.next/static
+COPY --from=builder /app/apps/public-web/public ./apps/public-web/public
+
 EXPOSE 3000
-ENTRYPOINT ["/app/docker/entrypoint.sh"]
-CMD ["node", ".next/standalone/server.js"]
+CMD ["node", "server.js"]

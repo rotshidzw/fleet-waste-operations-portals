@@ -10,6 +10,22 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U njilo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  db-init:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.db
+    environment:
+      DATABASE_URL: postgresql://njilo:njilo@db:5432/njilo
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
   public-web:
     build:
@@ -20,7 +36,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
   intranet:
     build:
@@ -33,7 +52,10 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
 
 volumes:
   db-data:

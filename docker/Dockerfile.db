@@ -1,0 +1,13 @@
+FROM node:20-bullseye-slim
+
+WORKDIR /app
+COPY package.json package-lock.json* ./
+COPY packages/config/package.json packages/config/
+COPY packages/db/package.json packages/db/
+RUN npm install --workspaces --include-workspace-root
+
+COPY packages/config/src packages/config/src
+COPY packages/db/prisma packages/db/prisma
+COPY packages/db/src packages/db/src
+
+CMD ["/bin/sh", "-c", "npm --workspace packages/db run generate && npx prisma db push --schema /app/packages/db/prisma/schema.prisma && npm --workspace packages/db run seed"]
