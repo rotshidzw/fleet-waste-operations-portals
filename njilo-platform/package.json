@@ -4,12 +4,11 @@
   "packageManager": "pnpm@9.12.2",
   "scripts": {
     "dev": "concurrently \"pnpm --filter public-web dev\" \"pnpm --filter intranet dev\"",
-    "db:migrate": "dotenv -e .env -- pnpm --filter @njilo/db prisma migrate dev",
-    "db:seed": "dotenv -e .env -- pnpm --filter @njilo/db prisma db seed",
+    "db:migrate": "pnpm --filter @njilo/db prisma migrate dev",
+    "db:seed": "pnpm --filter @njilo/db prisma db seed",
     "lint": "pnpm --filter public-web lint && pnpm --filter intranet lint"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
-    "dotenv-cli": "^7.4.2"
+    "concurrently": "^8.2.2"
   }
 }
