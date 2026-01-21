@@ -31,7 +31,7 @@ Intranet: http://localhost:3001 (demo account: admin@njiloconsulting.co.za / adm
 docker compose up --build
 ```
 
-The `db-init` service applies the Prisma schema and seeds demo data before the apps start.
+The `db-init` service runs once, installs the DB workspace dependencies, applies the Prisma schema, and seeds demo data before the apps start.
 
 ## Scripts
 

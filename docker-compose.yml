@@ -17,15 +17,22 @@ services:
       retries: 10
 
   db-init:
-    build:
-      context: .
-      dockerfile: ./docker/Dockerfile.db
+    image: node:20-bullseye-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
     environment:
       DATABASE_URL: postgresql://njilo:njilo@db:5432/njilo
     depends_on:
       db:
         condition: service_healthy
     restart: "no"
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install --workspace packages/db && npm --workspace packages/db run generate && npx prisma db push --schema /app/packages/db/prisma/schema.prisma && npm --workspace packages/db run seed"
+      ]
 
   public-web:
     build:
