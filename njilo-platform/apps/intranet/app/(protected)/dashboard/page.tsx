@@ -7,11 +7,15 @@ import { MarketPulse } from "../../../components/MarketPulse";
 
 async function createTodo(formData: FormData) {
   "use server";
-  const note = String(formData.get("note") || "");
-  const owner = String(formData.get("owner") || "");
+  const note = String(formData.get("note") || "").trim();
+  const owner = String(formData.get("owner") || "").trim();
+
+  if (!note || !owner) {
+    return;
+  }
 
   await prisma.activity.create({
-    data: { note: `TODO: ${note} · Owner: ${owner}` }
+    data: { note: `${note} · Owner: ${owner}` }
   });
 
   await prisma.auditLog.create({
@@ -23,12 +27,21 @@ async function createTodo(formData: FormData) {
 
 async function createMeeting(formData: FormData) {
   "use server";
-  const title = String(formData.get("title") || "");
-  const summary = String(formData.get("summary") || "");
-  const eventDate = String(formData.get("eventDate") || "");
+  const title = String(formData.get("title") || "").trim();
+  const summary = String(formData.get("summary") || "").trim();
+  const eventDate = String(formData.get("eventDate") || "").trim();
+
+  if (!title || !eventDate) {
+    return;
+  }
+
+  const parsedDate = new Date(eventDate);
+  if (Number.isNaN(parsedDate.getTime())) {
+    return;
+  }
 
   await prisma.event.create({
-    data: { title, summary, eventDate: new Date(eventDate) }
+    data: { title, summary: summary || "No agenda provided", eventDate: parsedDate }
   });
 
   await prisma.auditLog.create({
