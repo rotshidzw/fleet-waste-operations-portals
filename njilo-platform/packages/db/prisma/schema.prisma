@@ -79,6 +79,7 @@ model Company {
   industry    String?
   website     String?
   contacts    Contact[]
+  opportunities Opportunity[]
   createdAt   DateTime @default(now())
 }
 
@@ -102,6 +103,7 @@ model Opportunity {
   stage     OpportunityStage
   companyId String?
   company   Company?          @relation(fields: [companyId], references: [id])
+  activities Activity[]
   createdAt DateTime          @default(now())
 
   @@index([stage])
@@ -122,6 +124,9 @@ model Vehicle {
   model        String
   year         Int
   status       String
+  maintenanceTickets MaintenanceTicket[]
+  fuelLogs           FuelLog[]
+  trafficFines       TrafficFine[]
   createdAt    DateTime @default(now())
 }
 
@@ -272,6 +277,7 @@ model Vacancy {
   location  String
   status    VacancyStatus
   summary   String
+  applications Application[]
   createdAt DateTime @default(now())
 }
 
