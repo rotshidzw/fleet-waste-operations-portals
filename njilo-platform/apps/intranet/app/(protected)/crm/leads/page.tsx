@@ -1,6 +1,7 @@
 import { prisma } from "@njilo/db";
 import { requireRole } from "@/lib/rbac";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createLead(formData: FormData) {
   "use server";
@@ -16,6 +17,13 @@ async function createLead(formData: FormData) {
       source: "intranet"
     }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Lead", entityId: email }
+  });
+
+  revalidatePath("/crm/leads");
+  revalidatePath("/dashboard");
 }
 
 export default async function LeadsPage() {

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createCompany(formData: FormData) {
   "use server";
@@ -9,6 +10,12 @@ async function createCompany(formData: FormData) {
   await prisma.company.create({
     data: { name, industry }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Company", entityId: name }
+  });
+
+  revalidatePath("/crm/companies");
 }
 
 export default async function CompaniesPage() {

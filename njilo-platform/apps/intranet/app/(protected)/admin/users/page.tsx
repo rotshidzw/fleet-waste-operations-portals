@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@njilo/db";
 import { requireRole } from "@/lib/rbac";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createUser(formData: FormData) {
   "use server";
@@ -19,6 +20,9 @@ async function createUser(formData: FormData) {
   await prisma.auditLog.create({
     data: { action: "CREATE", entity: "User", entityId: email }
   });
+
+  revalidatePath("/admin/users");
+  revalidatePath("/admin/audit-log");
 }
 
 export default async function UsersPage() {

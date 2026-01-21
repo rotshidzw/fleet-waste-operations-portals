@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createVehicle(formData: FormData) {
   "use server";
@@ -11,6 +12,13 @@ async function createVehicle(formData: FormData) {
   await prisma.vehicle.create({
     data: { vin, make, model, year, status: "Active" }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Vehicle", entityId: vin }
+  });
+
+  revalidatePath("/fleet-ops/vehicles");
+  revalidatePath("/dashboard");
 }
 
 export default async function VehiclesPage() {

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createMedia(formData: FormData) {
   "use server";
@@ -9,6 +10,13 @@ async function createMedia(formData: FormData) {
   await prisma.mediaItem.create({
     data: { title, imageUrl }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "MediaItem", entityId: title }
+  });
+
+  revalidatePath("/cms/media");
+  revalidatePath("/media/media-gallery");
 }
 
 export default async function MediaPage() {

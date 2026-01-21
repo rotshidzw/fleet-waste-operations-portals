@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createEquipment(formData: FormData) {
   "use server";
@@ -9,6 +10,12 @@ async function createEquipment(formData: FormData) {
   await prisma.equipment.create({
     data: { name, serialNo, status: "Available" }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Equipment", entityId: serialNo }
+  });
+
+  revalidatePath("/waste-ops/equipment");
 }
 
 export default async function EquipmentPage() {

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createFine(formData: FormData) {
   "use server";
@@ -13,6 +14,12 @@ async function createFine(formData: FormData) {
   await prisma.trafficFine.create({
     data: { vehicleId, amount, status: "Open", issuedAt: new Date() }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "TrafficFine", entityId: vehicleId }
+  });
+
+  revalidatePath("/fleet-ops/traffic-fines");
 }
 
 export default async function TrafficFinesPage() {

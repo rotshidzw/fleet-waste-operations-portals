@@ -8,6 +8,7 @@ import { ServiceComparison } from "../components/ServiceComparison";
 import { Reveal } from "../components/Reveal";
 import { ContactCtaBand } from "../components/ContactCtaBand";
 import { NewsletterSignup } from "../components/NewsletterSignup";
+import { IndustriesTabs } from "../components/IndustriesTabs";
 import { Card, Section } from "@njilo/ui";
 
 const services = [
@@ -17,21 +18,26 @@ const services = [
 ];
 
 const highlights = [
-  { title: "Telematics & Tracking", description: "Live asset visibility, route performance, and risk alerts.", icon: "📡" },
-  { title: "Compliance & Audits", description: "Regulatory playbooks, safety checks, and reporting.", icon: "✅" },
-  { title: "Managed Fleet Care", description: "Service schedules, driver training, and uptime SLAs.", icon: "🛠️" },
-  { title: "Waste Diversion", description: "Recycling, landfill diversion, and ESG reporting.", icon: "♻️" }
-];
-
-const industries = [
-  "Public Works",
-  "Mining & Resources",
-  "Manufacturing",
-  "Retail Distribution",
-  "Ports & Logistics",
-  "Healthcare",
-  "Municipal Services",
-  "Construction"
+  {
+    title: "Telematics & Tracking",
+    description: "Live asset visibility, route performance, and risk alerts.",
+    icon: "/media/stock/service-tracking.svg"
+  },
+  {
+    title: "Compliance & Audits",
+    description: "Regulatory playbooks, safety checks, and reporting.",
+    icon: "/media/stock/service-compliance.svg"
+  },
+  {
+    title: "Managed Fleet Care",
+    description: "Service schedules, driver training, and uptime SLAs.",
+    icon: "/media/stock/service-maintenance.svg"
+  },
+  {
+    title: "Waste Diversion",
+    description: "Recycling, landfill diversion, and ESG reporting.",
+    icon: "/media/stock/service-equipment.svg"
+  }
 ];
 
 const processSteps = [
@@ -103,7 +109,7 @@ export default function HomePage() {
           {highlights.map((item) => (
             <Reveal key={item.title}>
               <Card title={item.title} description={item.description} className="h-full">
-                <span className="text-2xl">{item.icon}</span>
+                <Image src={item.icon} alt="" width={40} height={40} />
               </Card>
             </Reveal>
           ))}
@@ -111,16 +117,7 @@ export default function HomePage() {
       </Section>
 
       <Section title="Industries served" subtitle="Trusted by enterprise and public sector operators.">
-        <div className="flex flex-wrap gap-3">
-          {industries.map((industry) => (
-            <span
-              key={industry}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            >
-              {industry}
-            </span>
-          ))}
-        </div>
+        <IndustriesTabs />
       </Section>
 
       <Section title="How we work" subtitle="A proven delivery model that scales across regions.">

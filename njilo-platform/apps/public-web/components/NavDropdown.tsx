@@ -100,7 +100,7 @@ export function NavDropdown({ label, href, childrenItems }: NavDropdownProps) {
                 }
               }}
             >
-              <div className="grid gap-2">
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {childrenItems.map((child) => (
                   <Link
                     key={child.label}

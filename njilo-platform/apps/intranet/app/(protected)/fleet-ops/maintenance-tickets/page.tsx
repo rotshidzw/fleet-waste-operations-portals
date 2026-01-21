@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createTicket(formData: FormData) {
   "use server";
@@ -13,6 +14,12 @@ async function createTicket(formData: FormData) {
   await prisma.maintenanceTicket.create({
     data: { vehicleId, issue, status: "Open" }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "MaintenanceTicket", entityId: vehicleId }
+  });
+
+  revalidatePath("/fleet-ops/maintenance-tickets");
 }
 
 export default async function MaintenanceTicketsPage() {
