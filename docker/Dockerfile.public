@@ -8,6 +8,7 @@ COPY packages/db/package.json packages/db/
 RUN npm install --workspaces --include-workspace-root
 
 COPY . .
+RUN npm --workspace packages/db run generate
 WORKDIR /app/apps/public-web
 RUN npm run build
 

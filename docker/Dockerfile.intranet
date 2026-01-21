@@ -9,6 +9,7 @@ COPY packages/ui/package.json packages/ui/
 RUN npm install --workspaces --include-workspace-root
 
 COPY . .
+RUN npm --workspace packages/db run generate
 WORKDIR /app/apps/intranet
 RUN npm run build
 
