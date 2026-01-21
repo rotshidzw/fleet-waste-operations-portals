@@ -33,6 +33,18 @@ docker compose up --build
 
 The `db-init` service runs once, installs the DB workspace dependencies, applies the Prisma schema, and seeds demo data before the apps start.
 
+If Docker Desktop crashes or you see intermittent EOF errors during parallel builds, run the sequential build script instead:
+
+```bash
+./scripts/docker-build.sh
+```
+
+Windows PowerShell:
+
+```powershell
+./scripts/docker-build.ps1
+```
+
 ## Scripts
 
 - `npm run lint`
