@@ -29,6 +29,117 @@ enum VacancyStatus {
   CLOSED
 }
 
+enum WorkflowArea {
+  HR_ONBOARDING
+  HR_PERFORMANCE
+  HR_LEAVE
+  HR_TRAINING
+  HR_POLICIES
+  ADMIN_ACCESS
+  ADMIN_SECURITY
+  ADMIN_BUDGET
+  ADMIN_VENDOR
+  ADMIN_COMMS
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  ON_LEAVE
+  LEFT
+}
+
+enum DocumentCategory {
+  HR
+  CONTRACTS
+  COMPLIANCE
+  FINANCE
+  FLEET
+  SAFETY
+}
+
+enum DocumentStatus {
+  DRAFT
+  APPROVED
+  ARCHIVED
+}
+
+enum JobStatus {
+  REQUESTED
+  APPROVED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+enum ComplianceType {
+  DRIVER_LICENSE
+  VEHICLE_LICENSE
+  COF
+  SAFETY_INCIDENT
+  AUDIT
+}
+
+enum AssetType {
+  VEHICLE
+  PLANT
+  EQUIPMENT
+}
+
+enum AssetStatus {
+  ACTIVE
+  IN_MAINTENANCE
+  DECOMMISSIONED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ProcurementStatus {
+  REQUESTED
+  APPROVED
+  ORDERED
+  FULFILLED
+  DECLINED
+}
+
+enum InvoiceStatus {
+  SUBMITTED
+  APPROVED
+  SENT
+  PAID
+  REJECTED
+}
+
+enum ContractStatus {
+  ACTIVE
+  PENDING_RENEWAL
+  EXPIRED
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum MaintenanceStatus {
+  UPCOMING
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
 enum LeadDepartment {
   SALES
   OPS
@@ -73,6 +184,42 @@ model Lead {
   @@index([createdAt])
 }
 
+model Department {
+  id        String   @id @default(cuid())
+  name      String
+  code      String
+  employees Employee[]
+  createdAt DateTime @default(now())
+
+  @@index([code])
+}
+
+model JobTitle {
+  id        String   @id @default(cuid())
+  name      String
+  grade     String?
+  employees Employee[]
+  createdAt DateTime @default(now())
+}
+
+model Employee {
+  id               String         @id @default(cuid())
+  fullName         String
+  email            String         @unique
+  phone            String?
+  extension        String?
+  emergencyContact String?
+  status           EmployeeStatus
+  departmentId     String
+  department       Department     @relation(fields: [departmentId], references: [id])
+  jobTitleId       String
+  jobTitle         JobTitle       @relation(fields: [jobTitleId], references: [id])
+  createdAt        DateTime       @default(now())
+
+  @@index([departmentId])
+  @@index([status])
+}
+
 model Company {
   id          String   @id @default(cuid())
   name        String
@@ -107,6 +254,21 @@ model Opportunity {
   createdAt DateTime          @default(now())
 
   @@index([stage])
+}
+
+model Document {
+  id        String          @id @default(cuid())
+  title     String
+  category  DocumentCategory
+  status    DocumentStatus
+  version   String
+  owner     String
+  expiresAt DateTime?
+  fileRef   String?
+  createdAt DateTime        @default(now())
+
+  @@index([category])
+  @@index([status])
 }
 
 model Activity {
@@ -188,6 +350,20 @@ model WasteJob {
   createdAt DateTime @default(now())
 }
 
+model WorkOrder {
+  id            String   @id @default(cuid())
+  jobNumber     String   @unique
+  client        String
+  location      String
+  assignedAsset String?
+  assignedTeam  String?
+  status        JobStatus
+  scheduledFor  DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([status])
+}
+
 model Equipment {
   id        String   @id @default(cuid())
   name      String
@@ -202,12 +378,40 @@ model ComplianceNote {
   createdAt DateTime @default(now())
 }
 
+model ComplianceRecord {
+  id        String         @id @default(cuid())
+  type      ComplianceType
+  reference String
+  status    String
+  expiresAt DateTime?
+  owner     String
+  notes     String?
+  createdAt DateTime       @default(now())
+
+  @@index([type])
+  @@index([status])
+}
+
 model Testimonial {
   id        String   @id @default(cuid())
   client    String
   quote     String
   role      String?
   createdAt DateTime @default(now())
+}
+
+model Asset {
+  id                 String      @id @default(cuid())
+  assetTag           String      @unique
+  name               String
+  type               AssetType
+  trackingId         String?
+  serviceIntervalDays Int?
+  status             AssetStatus
+  createdAt          DateTime    @default(now())
+
+  @@index([status])
+  @@index([type])
 }
 
 model Partner {
@@ -233,6 +437,20 @@ model Event {
   summary   String
   eventDate DateTime
   createdAt DateTime @default(now())
+}
+
+model WorkflowItem {
+  id        String       @id @default(cuid())
+  area      WorkflowArea
+  title     String
+  owner     String
+  status    String
+  details   String
+  dueDate   DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([area])
+  @@index([status])
 }
 
 model MediaItem {
@@ -269,6 +487,114 @@ model Service {
   createdAt DateTime @default(now())
 
   @@index([category])
+}
+
+model HelpdeskTicket {
+  id          String        @id @default(cuid())
+  subject     String
+  category    String
+  priority    TicketPriority
+  status      TicketStatus
+  requester   String
+  assignedTo  String?
+  details     String?
+  createdAt   DateTime      @default(now())
+
+  @@index([status])
+  @@index([priority])
+}
+
+model ProcurementRequest {
+  id         String            @id @default(cuid())
+  item       String
+  quantity   Int
+  requester  String
+  department String
+  status     ProcurementStatus
+  notes      String?
+  createdAt  DateTime          @default(now())
+
+  @@index([status])
+}
+
+model InvoiceRequest {
+  id         String        @id @default(cuid())
+  client     String
+  amount     Float
+  status     InvoiceStatus
+  requester  String
+  details    String?
+  createdAt  DateTime      @default(now())
+
+  @@index([status])
+}
+
+model Client {
+  id            String         @id @default(cuid())
+  name          String
+  contractStart DateTime?
+  contractEnd   DateTime?
+  serviceScope  String?
+  status        ContractStatus
+  contracts     Contract[]
+  createdAt     DateTime       @default(now())
+}
+
+model Contract {
+  id          String         @id @default(cuid())
+  name        String
+  clientId    String
+  client      Client         @relation(fields: [clientId], references: [id])
+  startDate   DateTime
+  endDate     DateTime
+  status      ContractStatus
+  documentRef String?
+  createdAt   DateTime       @default(now())
+
+  @@index([clientId])
+  @@index([status])
+}
+
+model Incident {
+  id              String           @id @default(cuid())
+  incidentType    String
+  severity        IncidentSeverity
+  location        String
+  reportedBy      String
+  rootCause       String?
+  correctiveAction String?
+  status          String
+  createdAt       DateTime         @default(now())
+
+  @@index([severity])
+  @@index([status])
+}
+
+model MaintenanceSchedule {
+  id             String            @id @default(cuid())
+  assetId        String?
+  serviceType    String
+  nextServiceAt  DateTime
+  status         MaintenanceStatus
+  notes          String?
+  createdAt      DateTime          @default(now())
+
+  @@index([status])
+}
+
+model ReportExport {
+  id        String   @id @default(cuid())
+  title     String
+  period    String
+  status    String
+  createdAt DateTime @default(now())
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String  @unique
+  value     String
+  updatedAt DateTime @updatedAt
 }
 
 model Vacancy {

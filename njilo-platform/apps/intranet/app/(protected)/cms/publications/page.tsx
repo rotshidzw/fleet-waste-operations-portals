@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createPublication(formData: FormData) {
   "use server";
@@ -11,6 +12,13 @@ async function createPublication(formData: FormData) {
   await prisma.publication.create({
     data: { title, summary, body, pdfUrl }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Publication", entityId: title }
+  });
+
+  revalidatePath("/cms/publications");
+  revalidatePath("/media/publications");
 }
 
 export default async function PublicationsPage() {

@@ -9,12 +9,12 @@ const partners = [
 
 export function PartnerCarousel() {
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
       <div className="flex animate-scroll gap-10 px-8 py-6">
         {[...partners, ...partners].map((partner, index) => (
           <div key={`${partner.name}-${index}`} className="flex items-center gap-3">
             <Image src={partner.logo} alt={partner.name} width={80} height={48} />
-            <span className="text-sm font-medium text-slate-700">{partner.name}</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{partner.name}</span>
           </div>
         ))}
       </div>

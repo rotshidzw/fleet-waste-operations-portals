@@ -1,19 +1,41 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createContact(formData: FormData) {
   "use server";
-  const name = String(formData.get("name") || "");
-  const email = String(formData.get("email") || "");
-  const companyId = String(formData.get("companyId") || "");
+  const name = String(formData.get("name") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const title = String(formData.get("title") || "").trim();
+  const companyId = String(formData.get("companyId") || "").trim();
 
-  if (!companyId) {
+  if (!companyId || !name || !email) {
     return;
   }
 
   await prisma.contact.create({
-    data: { name, email, companyId }
+    data: { name, email, phone: phone || null, title: title || null, companyId }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Contact", entityId: email }
+  });
+
+  revalidatePath("/crm/contacts");
+}
+
+async function deleteContact(formData: FormData) {
+  "use server";
+  const contactId = String(formData.get("contactId") || "").trim();
+  if (!contactId) return;
+
+  await prisma.contact.delete({ where: { id: contactId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "Contact", entityId: contactId }
+  });
+
+  revalidatePath("/crm/contacts");
 }
 
 export default async function ContactsPage() {
@@ -26,6 +48,8 @@ export default async function ContactsPage() {
         <form action={createContact} className="grid gap-3 md:grid-cols-2">
           <input name="name" placeholder="Contact name" className="rounded-md border border-slate-200 p-2" required />
           <input name="email" type="email" placeholder="Email" className="rounded-md border border-slate-200 p-2" required />
+          <input name="phone" placeholder="Phone" className="rounded-md border border-slate-200 p-2" />
+          <input name="title" placeholder="Role / title" className="rounded-md border border-slate-200 p-2" />
           <select name="companyId" className="rounded-md border border-slate-200 p-2 md:col-span-2" required>
             <option value="">Select company</option>
             {companies.map((company) => (
@@ -40,9 +64,18 @@ export default async function ContactsPage() {
         <h2 className="text-lg font-semibold text-slate-900">Contacts</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {contacts.map((contact) => (
-            <li key={contact.id} className="border-b border-slate-100 pb-3">
-              <p className="font-semibold text-slate-900">{contact.name}</p>
-              <p className="text-slate-500">{contact.email} · {contact.company.name}</p>
+            <li key={contact.id} className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <p className="font-semibold text-slate-900">{contact.name}</p>
+                <p className="text-slate-500">{contact.email} · {contact.company.name}</p>
+                <p className="text-xs text-slate-400">{contact.phone || "Phone pending"} · {contact.title || "Role pending"}</p>
+              </div>
+              <form action={deleteContact}>
+                <input type="hidden" name="contactId" value={contact.id} />
+                <Button type="submit" variant="ghost" className="px-3 py-1 text-xs">
+                  Delete
+                </Button>
+              </form>
             </li>
           ))}
         </ul>

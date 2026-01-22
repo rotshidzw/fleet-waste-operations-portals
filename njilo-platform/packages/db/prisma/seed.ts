@@ -310,6 +310,359 @@ async function main() {
     ]
   });
 
+  // -------------------------
+  // Directory & departments
+  // -------------------------
+  await prisma.department.createMany({
+    skipDuplicates: true,
+    data: [
+      { name: "Operations", code: "OPS" },
+      { name: "Fleet Services", code: "FLEET" },
+      { name: "Finance", code: "FIN" }
+    ]
+  });
+
+  await prisma.jobTitle.createMany({
+    skipDuplicates: true,
+    data: [
+      { name: "Operations Lead", grade: "M2" },
+      { name: "Fleet Supervisor", grade: "M1" },
+      { name: "Finance Analyst", grade: "P2" }
+    ]
+  });
+
+  const opsDepartment = await prisma.department.findFirst({ where: { code: "OPS" } });
+  const fleetDepartment = await prisma.department.findFirst({ where: { code: "FLEET" } });
+  const financeDepartment = await prisma.department.findFirst({ where: { code: "FIN" } });
+  const opsTitle = await prisma.jobTitle.findFirst({ where: { name: "Operations Lead" } });
+  const fleetTitle = await prisma.jobTitle.findFirst({ where: { name: "Fleet Supervisor" } });
+  const financeTitle = await prisma.jobTitle.findFirst({ where: { name: "Finance Analyst" } });
+
+  if (opsDepartment && fleetDepartment && financeDepartment && opsTitle && fleetTitle && financeTitle) {
+    await prisma.employee.createMany({
+      skipDuplicates: true,
+      data: [
+        {
+          fullName: "Thandi Mokoena",
+          email: "thandi.mokoena@njilo.local",
+          status: "ACTIVE",
+          departmentId: opsDepartment.id,
+          jobTitleId: opsTitle.id,
+          phone: "+27 11 555 1200",
+          extension: "1200",
+          emergencyContact: "Sipho Mokoena · +27 82 555 2211"
+        },
+        {
+          fullName: "Joel Petersen",
+          email: "joel.petersen@njilo.local",
+          status: "ON_LEAVE",
+          departmentId: fleetDepartment.id,
+          jobTitleId: fleetTitle.id,
+          phone: "+27 11 555 1320",
+          extension: "1320",
+          emergencyContact: "Lebo Petersen · +27 83 555 1122"
+        },
+        {
+          fullName: "Ayesha Khan",
+          email: "ayesha.khan@njilo.local",
+          status: "ACTIVE",
+          departmentId: financeDepartment.id,
+          jobTitleId: financeTitle.id,
+          phone: "+27 11 555 1420",
+          extension: "1420",
+          emergencyContact: "Imran Khan · +27 84 555 3344"
+        }
+      ]
+    });
+  }
+
+  // -------------------------
+  // Documents
+  // -------------------------
+  await prisma.document.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        title: "Waste Services SLA Pack",
+        category: "CONTRACTS",
+        status: "APPROVED",
+        version: "3.1",
+        owner: "Contracts Office",
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90),
+        fileRef: "SLA-2024-OPS.pdf"
+      },
+      {
+        title: "Fleet Compliance Checklist",
+        category: "COMPLIANCE",
+        status: "DRAFT",
+        version: "1.4",
+        owner: "Compliance Team",
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 45),
+        fileRef: "FLEET-COMPLIANCE-CHK.docx"
+      }
+    ]
+  });
+
+  // -------------------------
+  // Work orders & compliance
+  // -------------------------
+  await prisma.workOrder.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        jobNumber: "OPS-2001",
+        client: "Green Corridor Logistics",
+        location: "Pretoria East",
+        assignedAsset: "Fleet-204",
+        assignedTeam: "Ops Alpha",
+        status: "SCHEDULED",
+        scheduledFor: new Date(Date.now() + 1000 * 60 * 60 * 24)
+      },
+      {
+        jobNumber: "OPS-2002",
+        client: "Metro Waste Authority",
+        location: "Johannesburg CBD",
+        assignedAsset: "Plant-019",
+        assignedTeam: "Ops Bravo",
+        status: "IN_PROGRESS",
+        scheduledFor: new Date()
+      }
+    ]
+  });
+
+  await prisma.complianceRecord.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        type: "DRIVER_LICENSE",
+        reference: "DRV-43902",
+        status: "Renewal due",
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 20),
+        owner: "Compliance Desk",
+        notes: "Schedule medical renewal."
+      },
+      {
+        type: "AUDIT",
+        reference: "AUD-2024-08",
+        status: "Open",
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60),
+        owner: "Internal Audit",
+        notes: "Mid-year compliance audit."
+      }
+    ]
+  });
+
+  // -------------------------
+  // Assets
+  // -------------------------
+  await prisma.asset.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        assetTag: "ASSET-1001",
+        name: "Isuzu N-Series 14t",
+        type: "VEHICLE",
+        trackingId: "TRK-00911",
+        serviceIntervalDays: 90,
+        status: "ACTIVE"
+      },
+      {
+        assetTag: "ASSET-2001",
+        name: "CAT 320 Excavator",
+        type: "PLANT",
+        trackingId: "TRK-01044",
+        serviceIntervalDays: 120,
+        status: "IN_MAINTENANCE"
+      }
+    ]
+  });
+
+  // -------------------------
+  // Helpdesk & procurement
+  // -------------------------
+  await prisma.helpdeskTicket.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        subject: "New laptop for dispatch",
+        category: "Devices",
+        priority: "HIGH",
+        status: "IN_PROGRESS",
+        requester: "Dispatch Team",
+        assignedTo: "IT Support",
+        details: "Laptop required for shift planning."
+      },
+      {
+        subject: "VPN access for finance contractor",
+        category: "Access",
+        priority: "MEDIUM",
+        status: "OPEN",
+        requester: "Finance Team",
+        assignedTo: "Security Admin",
+        details: "Grant VPN access for month-end."
+      }
+    ]
+  });
+
+  await prisma.procurementRequest.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        item: "PPE Starter Kits",
+        quantity: 12,
+        requester: "Ops Supervisor",
+        department: "Operations",
+        status: "APPROVED",
+        notes: "New hires onboarding."
+      },
+      {
+        item: "Fuel Cards",
+        quantity: 6,
+        requester: "Fleet Lead",
+        department: "Fleet Services",
+        status: "REQUESTED",
+        notes: "Additional cards for new vehicles."
+      }
+    ]
+  });
+
+  // -------------------------
+  // Finance invoices
+  // -------------------------
+  await prisma.invoiceRequest.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        client: "Metro Waste Authority",
+        amount: 245000,
+        status: "SUBMITTED",
+        requester: "Finance Team",
+        details: "July waste collection services."
+      },
+      {
+        client: "Green Corridor Logistics",
+        amount: 98000,
+        status: "APPROVED",
+        requester: "Account Manager",
+        details: "Fleet rental services."
+      }
+    ]
+  });
+
+  // -------------------------
+  // Clients & contracts
+  // -------------------------
+  await prisma.client.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        name: "Metro Waste Authority",
+        contractStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 365),
+        contractEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        serviceScope: "Municipal waste collection and recycling",
+        status: "ACTIVE"
+      },
+      {
+        name: "Green Corridor Logistics",
+        contractStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200),
+        contractEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 165),
+        serviceScope: "Fleet leasing and maintenance",
+        status: "PENDING_RENEWAL"
+      }
+    ]
+  });
+
+  const metroClient = await prisma.client.findFirst({ where: { name: "Metro Waste Authority" } });
+  const corridorClient = await prisma.client.findFirst({ where: { name: "Green Corridor Logistics" } });
+
+  if (metroClient && corridorClient) {
+    await prisma.contract.createMany({
+      skipDuplicates: true,
+      data: [
+        {
+          name: "Metro Waste SLA 2024",
+          clientId: metroClient.id,
+          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 365),
+          endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+          status: "ACTIVE",
+          documentRef: "SLA-2024-OPS.pdf"
+        },
+        {
+          name: "Green Corridor Fleet Lease",
+          clientId: corridorClient.id,
+          startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200),
+          endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 165),
+          status: "PENDING_RENEWAL",
+          documentRef: "FLEET-LEASE-2024.pdf"
+        }
+      ]
+    });
+  }
+
+  // -------------------------
+  // Incidents & maintenance
+  // -------------------------
+  await prisma.incident.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        incidentType: "Minor spill",
+        severity: "LOW",
+        location: "Depot 3",
+        reportedBy: "Safety Officer",
+        rootCause: "Loose coupling",
+        correctiveAction: "Replace coupling and retrain staff",
+        status: "Monitoring"
+      },
+      {
+        incidentType: "Vehicle collision",
+        severity: "HIGH",
+        location: "R21 Highway",
+        reportedBy: "Dispatch",
+        rootCause: "Driver fatigue",
+        correctiveAction: "Shift review and safety briefing",
+        status: "Under investigation"
+      }
+    ]
+  });
+
+  await prisma.maintenanceSchedule.createMany({
+    skipDuplicates: true,
+    data: [
+      {
+        serviceType: "Quarterly service",
+        nextServiceAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
+        status: "UPCOMING",
+        notes: "Fleet service batch A."
+      },
+      {
+        serviceType: "Hydraulic inspection",
+        nextServiceAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3),
+        status: "OVERDUE",
+        notes: "Plant maintenance backlog."
+      }
+    ]
+  });
+
+  // -------------------------
+  // Reports & settings
+  // -------------------------
+  await prisma.reportExport.createMany({
+    skipDuplicates: true,
+    data: [
+      { title: "Monthly Fleet Performance", period: "Aug 2024", status: "Queued" },
+      { title: "Compliance Risk Summary", period: "Aug 2024", status: "Generated" }
+    ]
+  });
+
+  await prisma.systemSetting.createMany({
+    skipDuplicates: true,
+    data: [
+      { key: "fleet_uptime_target", value: "97" },
+      { key: "compliance_risk_threshold", value: "30" }
+    ]
+  });
+
   console.log("✅ Seed completed");
 }
 

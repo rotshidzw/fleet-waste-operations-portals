@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createActivity(formData: FormData) {
   "use server";
@@ -8,6 +9,27 @@ async function createActivity(formData: FormData) {
   await prisma.activity.create({
     data: { note }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Activity", entityId: note.slice(0, 24) }
+  });
+
+  revalidatePath("/crm/activities");
+  revalidatePath("/dashboard");
+}
+
+async function deleteActivity(formData: FormData) {
+  "use server";
+  const activityId = String(formData.get("activityId") || "");
+  if (!activityId) return;
+
+  await prisma.activity.delete({ where: { id: activityId } });
+  await prisma.auditLog.create({
+    data: { action: "DELETE", entity: "Activity", entityId: activityId }
+  });
+
+  revalidatePath("/crm/activities");
+  revalidatePath("/dashboard");
 }
 
 export default async function ActivitiesPage() {
@@ -26,8 +48,14 @@ export default async function ActivitiesPage() {
         <h2 className="text-lg font-semibold text-slate-900">Recent activities</h2>
         <ul className="mt-4 space-y-3 text-sm">
           {activities.map((activity) => (
-            <li key={activity.id} className="border-b border-slate-100 pb-3 text-slate-600">
-              {activity.note}
+            <li key={activity.id} className="flex items-center justify-between border-b border-slate-100 pb-3 text-slate-600">
+              <span>{activity.note}</span>
+              <form action={deleteActivity}>
+                <input type="hidden" name="activityId" value={activity.id} />
+                <Button type="submit" variant="ghost" className="px-2 py-1 text-xs">
+                  Delete
+                </Button>
+              </form>
             </li>
           ))}
         </ul>

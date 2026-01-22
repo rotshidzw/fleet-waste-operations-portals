@@ -40,10 +40,10 @@ export function StatsCounters() {
       {stats.map((stat, index) => (
         <div
           key={stat.label}
-          className="flex flex-col items-center rounded-full border border-slate-200 bg-white px-6 py-10 text-center shadow-sm"
+          className="flex flex-col items-center rounded-full border border-slate-200 bg-white px-6 py-10 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900"
         >
-          <span className="text-4xl font-semibold text-blue-900">{counts[index]}</span>
-          <span className="mt-2 text-sm text-slate-600">{stat.label}</span>
+          <span className="text-4xl font-semibold text-blue-900 dark:text-white">{counts[index]}</span>
+          <span className="mt-2 text-sm text-slate-600 dark:text-slate-300">{stat.label}</span>
         </div>
       ))}
     </div>

@@ -5,3 +5,9 @@
 body {
   @apply bg-slate-100 text-slate-900 antialiased;
 }
+
+[data-role="READ_ONLY"] form,
+[data-role="READ_ONLY"] button[type="submit"] {
+  pointer-events: none;
+  opacity: 0.6;
+}

@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createVideo(formData: FormData) {
   "use server";
@@ -9,6 +10,13 @@ async function createVideo(formData: FormData) {
   await prisma.videoItem.create({
     data: { title, videoUrl }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "VideoItem", entityId: title }
+  });
+
+  revalidatePath("/cms/video");
+  revalidatePath("/media/video-gallery");
 }
 
 export default async function VideoPage() {
