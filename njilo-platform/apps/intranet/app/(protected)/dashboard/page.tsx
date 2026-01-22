@@ -56,6 +56,14 @@ export default async function DashboardPage() {
   const leadCount = await prisma.lead.count();
   const vehicleCount = await prisma.vehicle.count();
   const wasteJobs = await prisma.wasteJob.count();
+  const staffCount = await prisma.employee.count();
+  const activeStaff = await prisma.employee.count({ where: { status: "ACTIVE" } });
+  const documentCount = await prisma.document.count();
+  const expiringDocs = await prisma.document.count({
+    where: { expiresAt: { lte: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30) } }
+  });
+  const openWorkOrders = await prisma.workOrder.count({ where: { status: { in: ["REQUESTED", "APPROVED", "SCHEDULED", "IN_PROGRESS"] } } });
+  const complianceRisks = await prisma.complianceRecord.count({ where: { expiresAt: { lte: new Date(Date.now() + 1000 * 60 * 60 * 24 * 60) } } });
   const leads = await prisma.lead.findMany({ orderBy: { createdAt: "desc" }, take: 5 });
   const todos = await prisma.activity.findMany({ orderBy: { createdAt: "desc" }, take: 6 });
   const events = await prisma.event.findMany({ orderBy: { eventDate: "asc" }, take: 4 });
@@ -67,6 +75,11 @@ export default async function DashboardPage() {
         <Card title="Active Leads" description={`${leadCount} total leads`} />
         <Card title="Fleet Assets" description={`${vehicleCount} vehicles monitored`} />
         <Card title="Waste Jobs" description={`${wasteJobs} scheduled jobs`} />
+      </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        <Card title="Staff directory" description={`${activeStaff} active · ${staffCount} total`} />
+        <Card title="Document hub" description={`${documentCount} docs · ${expiringDocs} expiring soon`} />
+        <Card title="Operations workload" description={`${openWorkOrders} open work orders · ${complianceRisks} compliance risks`} />
       </div>
       <div className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
         <div className="rounded-xl border border-slate-200 bg-white p-6">

@@ -2,12 +2,27 @@ import Link from "next/link";
 
 const nav = [
   { label: "Dashboard", href: "/dashboard", roles: ["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"] },
+  { label: "Directory", href: "/directory", roles: ["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"] },
+  { label: "Documents", href: "/documents", roles: ["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"] },
   { label: "CRM", href: "/crm", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Clients", href: "/clients", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Contracts", href: "/contracts", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Operations", href: "/operations/jobs", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
   { label: "Fleet Ops", href: "/fleet-ops", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Fleet Fuel", href: "/fleet/fuel", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
   { label: "Waste Ops", href: "/waste-ops", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Assets", href: "/assets", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Compliance", href: "/compliance", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Helpdesk", href: "/helpdesk", roles: ["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"] },
+  { label: "Procurement", href: "/procurement", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Finance", href: "/finance/invoices", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Maintenance", href: "/maintenance", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
+  { label: "Safety", href: "/safety/incidents", roles: ["ADMIN", "MANAGER", "OPS", "READ_ONLY"] },
   { label: "HR", href: "/hr", roles: ["ADMIN", "HR", "READ_ONLY"] },
+  { label: "Reports", href: "/reports", roles: ["ADMIN", "MANAGER", "OPS", "HR", "READ_ONLY"] },
   { label: "CMS", href: "/cms", roles: ["ADMIN", "MANAGER"] },
-  { label: "Admin", href: "/admin", roles: ["ADMIN"] }
+  { label: "Admin", href: "/admin", roles: ["ADMIN"] },
+  { label: "Settings", href: "/settings", roles: ["ADMIN", "MANAGER"] }
 ];
 
 type SidebarProps = {
