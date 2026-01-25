@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createVacancy(formData: FormData) {
   "use server";
@@ -11,6 +12,13 @@ async function createVacancy(formData: FormData) {
   await prisma.vacancy.create({
     data: { title, location, status: status as "ACTIVE" | "CLOSED", summary }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Vacancy", entityId: title }
+  });
+
+  revalidatePath("/hr/vacancies");
+  revalidatePath("/careers/active-vacancies");
 }
 
 export default async function VacanciesPage() {

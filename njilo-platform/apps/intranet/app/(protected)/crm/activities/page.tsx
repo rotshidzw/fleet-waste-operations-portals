@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createActivity(formData: FormData) {
   "use server";
@@ -8,6 +9,13 @@ async function createActivity(formData: FormData) {
   await prisma.activity.create({
     data: { note }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Activity", entityId: note.slice(0, 24) }
+  });
+
+  revalidatePath("/crm/activities");
+  revalidatePath("/dashboard");
 }
 
 export default async function ActivitiesPage() {

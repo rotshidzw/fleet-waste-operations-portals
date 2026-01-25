@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createJob(formData: FormData) {
   "use server";
@@ -9,6 +10,13 @@ async function createJob(formData: FormData) {
   await prisma.wasteJob.create({
     data: { jobNumber, site, status: "Scheduled", scheduledAt: new Date() }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "WasteJob", entityId: jobNumber }
+  });
+
+  revalidatePath("/waste-ops/jobs");
+  revalidatePath("/dashboard");
 }
 
 export default async function WasteJobsPage() {

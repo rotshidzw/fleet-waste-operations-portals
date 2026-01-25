@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createFuelLog(formData: FormData) {
   "use server";
@@ -14,6 +15,12 @@ async function createFuelLog(formData: FormData) {
   await prisma.fuelLog.create({
     data: { vehicleId, liters, cost }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "FuelLog", entityId: vehicleId }
+  });
+
+  revalidatePath("/fleet-ops/fuel-logs");
 }
 
 export default async function FuelLogsPage() {

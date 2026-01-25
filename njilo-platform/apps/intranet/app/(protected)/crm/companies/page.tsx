@@ -1,14 +1,22 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createCompany(formData: FormData) {
   "use server";
   const name = String(formData.get("name") || "");
   const industry = String(formData.get("industry") || "");
+  const website = String(formData.get("website") || "");
 
   await prisma.company.create({
-    data: { name, industry }
+    data: { name, industry, website }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Company", entityId: name }
+  });
+
+  revalidatePath("/crm/companies");
 }
 
 export default async function CompaniesPage() {
@@ -20,6 +28,7 @@ export default async function CompaniesPage() {
         <form action={createCompany} className="grid gap-3 md:grid-cols-2">
           <input name="name" placeholder="Company name" className="rounded-md border border-slate-200 p-2" required />
           <input name="industry" placeholder="Industry" className="rounded-md border border-slate-200 p-2" />
+          <input name="website" placeholder="Website" className="rounded-md border border-slate-200 p-2 md:col-span-2" />
           <Button type="submit" className="md:col-span-2">Save company</Button>
         </form>
       </Card>
@@ -30,7 +39,10 @@ export default async function CompaniesPage() {
           {companies.map((company) => (
             <li key={company.id} className="border-b border-slate-100 pb-3">
               <p className="font-semibold text-slate-900">{company.name}</p>
-              <p className="text-slate-500">{company.industry}</p>
+              <p className="text-slate-500">{company.industry || "Industry pending"}</p>
+              {company.website && (
+                <p className="text-xs text-slate-400">{company.website}</p>
+              )}
             </li>
           ))}
         </ul>

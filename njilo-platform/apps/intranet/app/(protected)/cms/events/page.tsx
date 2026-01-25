@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createEvent(formData: FormData) {
   "use server";
@@ -10,6 +11,13 @@ async function createEvent(formData: FormData) {
   await prisma.event.create({
     data: { title, summary, eventDate: new Date(eventDate) }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Event", entityId: title }
+  });
+
+  revalidatePath("/cms/events");
+  revalidatePath("/media/company-events");
 }
 
 export default async function EventsPage() {

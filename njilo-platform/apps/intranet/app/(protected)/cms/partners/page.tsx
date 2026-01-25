@@ -1,5 +1,6 @@
 import { prisma } from "@njilo/db";
 import { Button, Card } from "@njilo/ui";
+import { revalidatePath } from "next/cache";
 
 async function createPartner(formData: FormData) {
   "use server";
@@ -10,6 +11,13 @@ async function createPartner(formData: FormData) {
   await prisma.partner.create({
     data: { name, logoUrl, sortOrder }
   });
+
+  await prisma.auditLog.create({
+    data: { action: "CREATE", entity: "Partner", entityId: name }
+  });
+
+  revalidatePath("/cms/partners");
+  revalidatePath("/");
 }
 
 export default async function PartnersPage() {
